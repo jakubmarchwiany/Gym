@@ -8,7 +8,7 @@ void gym::makeQueue() {
 
     while (true) {
         static thread_local std::uniform_int_distribution<> wait(5, 10);
-        std::this_thread::sleep_for(std::chrono::milliseconds(wait(rng) * 500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(wait(rng) * 100));
 
 
         if (clients.size() != line.size()) {
@@ -19,7 +19,7 @@ void gym::makeQueue() {
             }
 
 //            if (number_of_client == 3)
-//                rec.release();
+//                rec.info();
 
             clients.emplace_back(std::make_unique<client>(number_of_client, first_free, *this));
 
@@ -35,6 +35,8 @@ void gym::run() {
     printer.printGym();
     std::thread sss(&gym::makeQueue,this);
     recept = new receptionist(*this);
+    trai = new trainer(*this);
+
 
     sss.join();
 }
@@ -43,12 +45,24 @@ std::array<place_in_line, 10> &gym::getLine() {
     return line;
 }
 
-int gym::getCurrentClients() const {
+int gym::getCurrentClients(){
     return current_clients;
 }
 
 void gym::setCurrentClients(int currentClients) {
     current_clients = currentClients;
+}
+
+std::array<locker, 17> &gym::getLockers()  {
+    return lockers;
+}
+
+void gym::setNumberOfCrossfitters(int numberOfCrossfitters) {
+    number_of_crossfitters = numberOfCrossfitters;
+}
+
+int gym::getNumberOfCrossfitters(){
+    return number_of_crossfitters;
 }
 
 

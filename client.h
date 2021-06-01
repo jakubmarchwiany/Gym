@@ -4,6 +4,7 @@
 #include <thread>
 #include "gym.h"
 #include <ncurses.h>
+#include "locker.h"
 
 class gym;
 
@@ -17,6 +18,8 @@ public:
     void visit();
     void in_line();
     void reception();
+    void locker_room();
+    void training();
 
 private:
 
@@ -24,6 +27,7 @@ private:
     int weight;
 
     int numberInLine;
+    int number_of_action;
 
     gym& g;
 
@@ -33,6 +37,11 @@ private:
     void printClientClear(int x, int y);
 
     void printClient(int x, int y, int id);
+
+    void print_lock_locker(int x, int y);
+
+
+    void crossfit();
 };
 
 #endif //UNTITLED3_CLIENT_H

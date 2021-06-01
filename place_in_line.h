@@ -15,14 +15,14 @@ public:
 
     void request(int other_owner);
     void release();
-    std::mutex &getMutex();
+
     bool is_free();
     int get_owner();
 
-    int getX() const;
+    int getX();
+    int getY();
 
-    int getY() const;
-
+    std::mutex &getMutex();
 private:
     int num;
     int x,y;

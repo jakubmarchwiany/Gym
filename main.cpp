@@ -1,6 +1,5 @@
 #include <iostream>
 #include <ncurses.h>
-
 #include "gym.h"
 
 void prepareSimulation(){

@@ -35,17 +35,16 @@ void screen_printer::printLocker(int xPosition, int yPosition, int number, int n
     init_pair(5,COLOR_WHITE, COLOR_GREEN);
     attron(COLOR_PAIR(5));
     for (int i = 0;i<8;i++) {
-        mvprintw(yPosition, xPosition+(4 * number), " ");
-        mvprintw(yPosition, xPosition+1+(4 * number), "%02d", numberStart);
-        mvprintw(yPosition, xPosition+3+(4 * number), " ");
 
-        mvprintw(yPosition+1, xPosition+(4 * number), " ");
-        mvprintw(yPosition+1, xPosition+3+(4 * number), " ");
+        mvprintw(yPosition, xPosition+(7 * number), "   %02d   ", numberStart);
 
-        mvprintw(yPosition+2, xPosition+(4 * number), " ");
-        mvprintw(yPosition+2, xPosition+1+(4 * number), " ");
-        mvprintw(yPosition+2, xPosition+2+(4 * number), " ");
-        mvprintw(yPosition+2, xPosition+3+(4 * number), " ");
+        mvprintw(yPosition+1, xPosition+(7 * number), " ");
+        mvprintw(yPosition+2, xPosition+(7 * number), " ");
+        mvprintw(yPosition+3, xPosition+(7 * number), " ");
+
+        mvprintw(yPosition+1, xPosition+7+(7 * number), " ");
+        mvprintw(yPosition+2, xPosition+7+(7 * number), " ");
+        mvprintw(yPosition+3, xPosition+7+(7 * number), " ");
     }
     attroff(COLOR_PAIR(5));
 }
@@ -75,7 +74,7 @@ void screen_printer::printGym() {
         if (200 >= i)
             mvaddch(35, i, ' ');
 
-        if (127 >= i)
+        if (129 >= i)
             mvaddch(22, i, ' ');
 
         mvaddch(63, i, ' ');
@@ -86,7 +85,7 @@ void screen_printer::printGym() {
             mvaddch(i, 50, ' ');
 
         if (i <= 35)
-            mvaddch(i, 127, ' ');
+            mvaddch(i, 129, ' ');
 
         if (i <= 24 || i>= 30)
             mvaddch(i,15,' ');
@@ -111,11 +110,11 @@ void screen_printer::printGym() {
 
 //    Szafki
 
-    for (int n=0; n<=18;n++)
-        printLocker(51,8,n,n);
+    for (int n=0; n<=10;n++)
+        printLocker(51,6,n,n+1);
 
-    for (int n=0; n<=16;n++)
-        printLocker(59,19,n,n+19);
+    for (int n=0; n<=5;n++)
+        printLocker(86,13,n,n+12);
 
 // Maty do ćwiczenia grupowego
 
@@ -133,7 +132,7 @@ void screen_printer::printGym() {
 
     mvprintw(7,30,"Recepcja");
 
-    mvprintw(7,85,"Szatnia");
+    mvprintw(20,85,"Szatnia");
 
     mvprintw(7,157,"Zajecia grupowe");
 

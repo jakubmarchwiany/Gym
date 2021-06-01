@@ -1,7 +1,3 @@
-//
-// Created by kuba on 30.05.2021.
-//
-
 #ifndef UNTITLED3_RECEPTIONIST_H
 #define UNTITLED3_RECEPTIONIST_H
 
@@ -33,4 +29,4 @@ public:
 };
 
 
-#endif //UNTITLED3_RECEPTIONIST_H
+#endif

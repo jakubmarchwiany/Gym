@@ -1,15 +1,11 @@
 #include "reception.h"
-#include <iostream>
-#include <thread>
 
-
-
-void reception::request(int other_owner)
+void reception::request()
 {
-    while (owner != other_owner) {
+    while (true) {
         if (free) {
             free = false;
-            owner = other_owner;
+            break;
         } else {
             channel.wait();
         }
@@ -18,8 +14,6 @@ void reception::request(int other_owner)
 
 void reception::release()
 {
-    owner= -1;
-    free = true;
     channel.notify_all();
 }
 
@@ -27,4 +21,8 @@ void reception::release()
 
 std::mutex &reception::getMutex(){
     return mutex;
+}
+
+void reception::setFree(bool free) {
+    reception::free = free;
 }

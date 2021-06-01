@@ -14,4 +14,4 @@ public:
     void printGym();
 };
 
-#endif //UNTITLED3_SCREEN_PRINTER_H
+#endif

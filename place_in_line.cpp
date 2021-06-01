@@ -1,10 +1,6 @@
-//
-// Created by kuba on 28.05.2021.
-//
 #include <iostream>
 #include <random>
 #include <thread>
-
 #include "place_in_line.h"
 
 
@@ -47,11 +43,11 @@ std::mutex &place_in_line::getMutex() {
     return mutex;
 }
 
-int place_in_line::getX() const {
+int place_in_line::getX(){
     return x;
 }
 
-int place_in_line::getY() const {
+int place_in_line::getY(){
     return y;
 }
 

@@ -15,4 +15,4 @@ class sync_channel {
         std::condition_variable condition;
 };
 
-#endif //UNTITLED3_SYNC_CHANNEL_H
+#endif
