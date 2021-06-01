@@ -17,6 +17,7 @@
 #include "locker.h"
 #include "crossfit.h"
 #include "trainer.h"
+#include "bench.h"
 
 class client;
 class receptionist;
@@ -45,6 +46,7 @@ public:
     std::atomic<bool> receptionIsFree {false};
     std::array<place_in_line, 10> &getLine();
 
+    std::array<bench, 3> &getBenches();
 
 
     int getCurrentClients();
@@ -59,6 +61,12 @@ private:
 
 
     std::mt19937 rng{ std::random_device{}() };
+
+    std::array<bench,3> benches {
+        bench(26,52),
+        bench(41,52),
+        bench(56,52)
+    };
 
     std::vector<std::unique_ptr<client>> clients;
     std::array<place_in_line, 10> line {

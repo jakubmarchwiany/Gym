@@ -42,6 +42,8 @@ private:
 
 
     void crossfit();
+
+    void chest_press();
 };
 
 #endif //UNTITLED3_CLIENT_H

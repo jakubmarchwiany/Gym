@@ -30,8 +30,8 @@ void client::printClientClear(int x, int y) {
     std::lock_guard<std::mutex> print_lock(g.mutex_print);
     init_pair(8,COLOR_BLACK, COLOR_BLACK);
     attron(COLOR_PAIR(8));
-    mvprintw(y,x,"XXXXX");
-    mvprintw(y+1,x,"XXXXX");
+    mvprintw(y,x,"XXXX");
+    mvprintw(y+1,x,"XXXX");
     attroff(COLOR_PAIR(8));
     refresh();
 }
@@ -154,19 +154,13 @@ void client::locker_room() {
 
         }
     }
-
-
-
-
-
-
 }
 
 void client::training(){
 
-    while(number_of_action < 4){
-        int number = rand() % 101;
-
+//    while(number_of_action < 4){
+//        int number = rand() % 101;
+//
 //        if (number <= 33)
 //            std::this_thread::sleep_for(std::chrono::milliseconds(50)); //klata
 //        else if (number <= 66)
@@ -175,31 +169,58 @@ void client::training(){
 //            std::this_thread::sleep_for(std::chrono::milliseconds(50)); //zajęcia grupowe
 //        else
 //            std::this_thread::sleep_for(std::chrono::milliseconds(50)); //wychodze elo
+//
+//        crossfit();
+//
+//        number_of_action++;
+//    }
 
-        crossfit();
+    crossfit();
 
-        number_of_action++;
-    }
+
+
 }
 
 
 void client::crossfit(){
-
     std::unique_lock<std::mutex> lockNumber(g.cross.mutex);
-
     if(g.cross.clients < 3) {
-        printClient(137 + g.cross.clients * 25,17 + 1,id);
+        int x = g.cross.clients;
+        printClient(137 + x * 25,17 + 1,id);
         g.cross.clients++;
-
-
         lockNumber.unlock();
         g.cross.wait_for_training();
+        printClientClear(137 + x * 25,17 + 1);
+
     }else{
         printClient(123,28,id);
+        lockNumber.unlock();
     }
 }
 
+void client::chest_press(){
+    int attempt = 0;
+    while(true) {
+//        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
+        for (int i = 0; i < 3; i++) {
+            bench &bench = g.getBenches().at(i);
+            if (bench.mutex.try_lock()) {
+
+
+
+
+
+            }
+        }
+
+        attempt++;
+        if (attempt = 10)
+            break;
+
+    }
+
+}
 
 int client::get_id() {
     return id;

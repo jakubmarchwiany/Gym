@@ -99,12 +99,12 @@ void screen_printer::printGym() {
 // Rysowanie Ławek do klaty
     printBench(26,52);
     printBench(41,52);
-    printBench(56,52);
+//    printBench(56,52);
 
 // Rysowanie miejsc do Martwego Ciągu
     printDeadlift(100,51);
     printDeadlift(125,51);
-    printDeadlift(150,51);
+//    printDeadlift(150,51);
 
 
 
@@ -121,9 +121,9 @@ void screen_printer::printGym() {
     printMat(135,17);
     printMat(160,17);
     printMat(185,17);
-    printMat(135,27);
-    printMat(160,27);
-    printMat(185,27);
+//    printMat(135,27);
+//    printMat(160,27);
+//    printMat(185,27);
 
 
 //    Napisy

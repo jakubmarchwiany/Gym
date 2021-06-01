@@ -4,10 +4,6 @@
 #include "sync_channel.h"
 
 class crossfit {
-
-
-
-
 public:
     bool start = false;
     int attempt = 0;

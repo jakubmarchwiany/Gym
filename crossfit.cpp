@@ -1,5 +1,6 @@
 #include <thread>
 #include "crossfit.h"
+#include "ncurses.h"
 
 void crossfit::wait_for_training()
 {
@@ -7,7 +8,7 @@ void crossfit::wait_for_training()
         std::unique_lock<std::mutex> lock(mutex);
         if (start) {
             lock.unlock();
-            std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             break;
         } else if (attempt == 5) {
             lock.unlock();

@@ -57,12 +57,8 @@ std::array<locker, 17> &gym::getLockers()  {
     return lockers;
 }
 
-void gym::setNumberOfCrossfitters(int numberOfCrossfitters) {
-    number_of_crossfitters = numberOfCrossfitters;
-}
-
-int gym::getNumberOfCrossfitters(){
-    return number_of_crossfitters;
+std::array<bench, 3> &gym::getBenches(){
+    return benches;
 }
 
 

@@ -33,7 +33,7 @@ void trainer::work(){
 
 void trainer::coffee_time() {
     printTrainer(43,13);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2870));
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     clear(43,13);
 }
 
@@ -43,22 +43,28 @@ void trainer::check() {
     std::unique_lock<std::mutex> lock(g.cross.mutex);
     if (g.cross.clients == 3){
         g.cross.attempt = 0;
-        lesson();
+        g.cross.start = true;
+        lock.unlock();
+        g.cross.info();
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+
+        std::unique_lock<std::mutex> lock2(g.cross.mutex);
+        g.cross.start = false;
+        g.cross.clients = 0;
+        lock2.unlock();
+
     }else{
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+//        mvprintw(15,205,"Ilosc prob %d",g.cross.attempt);
         g.cross.attempt++;
+        lock.unlock();
         g.cross.info();
     }
-    lock.unlock();
 
-
-
-
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     clear(162,10);
 }
 
 void trainer::lesson() {
-    g.cross.start = true;
-    g.cross.info();
+
 }
