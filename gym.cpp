@@ -18,9 +18,6 @@ void gym::makeQueue() {
                 first_free++;
             }
 
-//            if (number_of_client == 3)
-//                rec.info();
-
             clients.emplace_back(std::make_unique<client>(number_of_client, first_free, *this));
 
             number_of_client++;
@@ -59,6 +56,10 @@ std::array<locker, 17> &gym::getLockers()  {
 
 std::array<bench, 3> &gym::getBenches(){
     return benches;
+}
+
+std::array<load, 14> &gym::getLoads(){
+    return loads;
 }
 
 

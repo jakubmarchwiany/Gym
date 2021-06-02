@@ -5,7 +5,7 @@ void screen_printer::printBench(int xPosition,int yPosition){
     init_pair(2,COLOR_BLACK, COLOR_RED);
     attron(COLOR_PAIR(2));
 
-    for (int x = 0;x < 3;x++ )
+    for (int x = 0;x < 4;x++ )
         for(int y = 0;y < 5;y++)
             mvprintw(y+yPosition,x+xPosition," ");
 
@@ -61,6 +61,18 @@ void screen_printer::printMat(int xPosition, int yPosition){
     attroff(COLOR_PAIR(6));
 }
 
+void screen_printer::printLoad(int xPosition, int yPosition,int weight){
+    init_pair(15,COLOR_WHITE, 16);
+    attron(COLOR_PAIR(15));
+
+    mvprintw(yPosition,xPosition," %d ",weight);
+
+
+    attroff(COLOR_PAIR(15));
+}
+
+
+
 void screen_printer::printGym() {
 
 //    Rysowanie Ścian
@@ -105,6 +117,34 @@ void screen_printer::printGym() {
     printDeadlift(100,51);
     printDeadlift(125,51);
 //    printDeadlift(150,51);
+
+
+// Rysowanie ciężarów
+
+    for(int i=0;i<8;){
+        printLoad(20 , 37 + i,5);
+
+        i += 2;
+    }
+
+    for(int i=0;i<8;){
+        printLoad(25 , 37 + i,10);
+
+        i += 2;
+    }
+
+    for(int i=0;i<8;){
+        printLoad(30 , 37 + i,20);
+
+        i += 2;
+    }
+
+    for(int i=0;i<4;){
+        printLoad(35 , 37 + i,40);
+
+        i += 2;
+    }
+
 
 
 

@@ -1,7 +1,3 @@
-//
-// Created by kuba on 28.05.2021.
-//
-
 #ifndef UNTITLED3_PLACE_IN_LINE_H
 #define UNTITLED3_PLACE_IN_LINE_H
 

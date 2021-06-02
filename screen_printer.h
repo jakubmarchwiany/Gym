@@ -12,6 +12,10 @@ public:
     void printMat(int xPosition, int yPosition);
 
     void printGym();
+
+//    void printLoad(int xPosition, int yPosition);
+
+    void printLoad(int xPosition, int yPosition, int weight);
 };
 
 #endif

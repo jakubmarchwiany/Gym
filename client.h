@@ -5,6 +5,9 @@
 #include "gym.h"
 #include <ncurses.h>
 #include "locker.h"
+#include "load.h"
+#include "bench.h"
+
 
 class gym;
 
@@ -26,6 +29,7 @@ private:
     int id;
     int weight;
 
+
     int numberInLine;
     int number_of_action;
 
@@ -43,7 +47,14 @@ private:
 
     void crossfit();
 
-    void chest_press();
+    void take_bench();
+
+
+    void printLoad(int xPosition, int yPosition, int weight);
+
+    void print_clear_load(int xPosition, int yPosition);
+
+    void chest_press(bench &ben);
 };
 
 #endif //UNTITLED3_CLIENT_H
