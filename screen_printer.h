@@ -1,8 +1,38 @@
 #ifndef UNTITLED3_SCREEN_PRINTER_H
 #define UNTITLED3_SCREEN_PRINTER_H
 
+#include <mutex>
+
+
+
 class screen_printer {
 public:
+    std::mutex &getMutex();
+
+    void print_client(int x, int y, int id);
+
+    void clear_client(int x, int y);
+
+    void print_receptionist(int x, int y);
+
+    void clear_receptionist(int x, int y);
+
+    void print_trainer(int x, int y);
+
+    void clear_trainer(int x, int y);
+
+
+    void printLoad(int xPosition, int yPosition, int weight);
+
+    void print_clear_load(int xPosition, int yPosition);
+
+
+    void print_opened_locker(int x, int y);
+
+    void print_closed_locker(int x, int y);
+
+
+
     void printBench(int xPosition, int yPosition);
 
     void printDeadlift(int xPosition, int yPosition);
@@ -13,9 +43,10 @@ public:
 
     void printGym();
 
-//    void printLoad(int xPosition, int yPosition);
+private:
+    std::mutex print_mutex;
 
-    void printLoad(int xPosition, int yPosition, int weight);
+
 };
 
 #endif

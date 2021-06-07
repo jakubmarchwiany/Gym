@@ -5,24 +5,18 @@
 #include "ncurses.h"
 
 class trainer {
+public:
+    std::thread &getLifeline();
+    trainer(gym &g,std::atomic<bool> &done);
+private:
 
     gym& g;
     std::thread lifeline;
+    std::atomic<bool> &done;
 
     void coffee_time();
-
     void check();
-
-    void lesson();
-
     void work();
-
-    void clear(int x, int y);
-
-    void printTrainer(int x, int y);
-
-public:
-    trainer(gym &g);
 };
 
 

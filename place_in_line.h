@@ -12,12 +12,10 @@ public:
     void request(int other_owner);
     void release();
 
-    bool is_free();
-    int get_owner();
-
     int getX();
     int getY();
-
+    bool is_free();
+    int get_owner();
     std::mutex &getMutex();
 private:
     int num;

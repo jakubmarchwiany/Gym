@@ -1,82 +1,69 @@
 #include "client.h"
 
-client::client(int id, int numberInLine, gym& g) : id(id), numberInLine(numberInLine), g(g), lifeline(&client::visit, this) {}
+//client::client(int id, int number_in_Line, gym& g) : id(id), number_in_Line(number_in_Line), g(g), lifeline(&client::visit, this) {}
 
+client::client(int id, int numberInLine, gym& g, std::atomic<bool> &done) : id(id), number_in_Line(numberInLine), g(g), lifeline(&client::visit, this), done(done) {}
 
 void client::visit() {
-    // Wejście do kolejki
-    in_line();
-    // Wejście do recepcji
-    reception();
-    // Wejście do szatni
-    locker_room();
-    // trening
-    training();
+
+//    do {
+        // Wejście do kolejki
+        in_line();
+        // Wejście do recepcji
+        reception();
+        // Wejście do szatni
+        locker_room();
+        // trening
+        training();
+
+//    }while(!done);
+
 }
 
-void client::printClient(int x, int y,int id) {
-//    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    std::lock_guard<std::mutex> print_lock(g.mutex_print);
-    init_pair(7,COLOR_BLACK, COLOR_YELLOW);
-    attron(COLOR_PAIR(7));
-    mvprintw(y,x,"    ");
-    mvprintw(y+1,x,"   %d",id);
-    attroff(COLOR_PAIR(7));
-    refresh();
-}
 
-void client::printClientClear(int x, int y) {
-//    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    std::lock_guard<std::mutex> print_lock(g.mutex_print);
-    init_pair(8,COLOR_BLACK, COLOR_BLACK);
-    attron(COLOR_PAIR(8));
-    mvprintw(y,x,"XXXX");
-    mvprintw(y+1,x,"XXXX");
-    attroff(COLOR_PAIR(8));
-    refresh();
-}
 
 
 void client::in_line() {
     // Dostowanie następnego miejsca w kolejce
-    while(numberInLine >= 1){
+    while(number_in_Line >= 1){
         // Pobranie mutexu z akutalnego miejsca w kolejce
-        std::unique_lock<std::mutex> lock(g.getLine().at(numberInLine).getMutex());
+        std::unique_lock<std::mutex> lock(g.getLine().at(number_in_Line).getMutex());
 //        lock.lock();
 
         // Zarządanie miejsca w kolejce
-        g.getLine().at(numberInLine).request(id);
+        g.getLine().at(number_in_Line).request(id);
 
         // Wyświetlenie klienta na aktualnej pozycji w kolejce
-        printClient(g.getLine().at(numberInLine).getX(),g.getLine().at(numberInLine).getY(),this->id);
+        g.printer.print_client(g.getLine().at(number_in_Line).getX(), g.getLine().at(number_in_Line).getY(), this->id);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         lock.unlock();
 
-        std::unique_lock<std::mutex> lock2(g.getLine().at(numberInLine-1).getMutex());
+        std::unique_lock<std::mutex> lock2(g.getLine().at(number_in_Line - 1).getMutex());
 
         // Zarądzanie miejsca następnego w kolejce
-        g.getLine().at(numberInLine - 1).request(id);
+        g.getLine().at(number_in_Line - 1).request(id);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         lock2.unlock();
 
         // Wyczyszczenie z poprzedniej pozycji w kolejce
-        printClientClear(g.getLine().at(numberInLine).getX(),g.getLine().at(numberInLine).getY());
+        g.printer.clear_client(g.getLine().at(number_in_Line).getX(), g.getLine().at(number_in_Line).getY());
 
         // Zwolnienie aktualnego miejsca w kolejce
-        g.getLine().at(numberInLine).release();
+        g.getLine().at(number_in_Line).release();
 
-        numberInLine--;
+        number_in_Line--;
     }
 }
 
 void client::reception() {
-    std::unique_lock<std::mutex> lock2(g.getLine().at(numberInLine).getMutex());
 
-    g.getLine().at(numberInLine).request(id);
+    std::unique_lock<std::mutex> lock2(g.getLine().at(number_in_Line).getMutex());
 
-    printClient(g.getLine().at(numberInLine).getX(),g.getLine().at(numberInLine).getY(),this->id);
+    g.getLine().at(number_in_Line).request(id);
+
+    g.printer.print_client(g.getLine().at(number_in_Line).getX(), g.getLine().at(number_in_Line).getY(), this->id);
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     lock2.unlock();
@@ -89,20 +76,23 @@ void client::reception() {
 
     lockRec.unlock();
 
-    printClientClear(g.getLine().at(numberInLine).getX(),g.getLine().at(numberInLine).getY());
+    g.printer.clear_client(g.getLine().at(number_in_Line).getX(), g.getLine().at(number_in_Line).getY());
 
-    g.getLine().at(numberInLine).release();
+    g.getLine().at(number_in_Line).release();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-    printClient(30,18,this->id);
+    g.printer.print_client(30, 18, this->id);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-    printClientClear(30,18);
+    g.printer.clear_client(30, 18);
 
-    std::unique_lock<std::mutex> lockNumber(g.mutex_number);
+    std::unique_lock<std::mutex> lockNumber(g.getMutexNumber());
     g.setCurrentClients(g.getCurrentClients() + 1);
+    std::unique_lock<std::mutex> print(g.printer.getMutex());
+    mvprintw(15,203,"Liczba klientow %d",g.getCurrentClients());
+    print.unlock();
     lockNumber.unlock();
 
     g.rec.release();
@@ -112,34 +102,24 @@ void client::reception() {
 
 }
 
-void client::print_lock_locker(int x, int y){
-    std::lock_guard<std::mutex> print_lock(g.mutex_print);
-    init_pair(12,COLOR_BLACK, COLOR_RED);
-    attron(COLOR_PAIR(12));
-    mvprintw(y+1, x+1, "      ");
-    attroff(COLOR_PAIR(12));
-    refresh();
-}
 
 void client::locker_room() {
-    printClient(60,15,this->id);
+    g.printer.print_client(60, 15, this->id);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-    print_lock_locker(g.getLockers().at(0).getX(), g.getLockers().at(0).getY());
-    g.getLockers().at(0).setIsFree(false);
-    print_lock_locker(g.getLockers().at(1).getX(), g.getLockers().at(1).getY());
-    g.getLockers().at(1).setIsFree(false);
+
 
     for(int i =0;i<17;i++){
         locker & loc = g.getLockers().at(i);
         if (loc.getMutex().try_lock()){
             if (loc.isFree()){
-                printClientClear(60,15);
+                g.printer.clear_client(60, 15);
 
 
-                printClient(loc.getX() + 2,loc.getY() + 2,this->id);
-                print_lock_locker(loc.getX(), loc.getY());
+                g.printer.print_client(loc.getX() + 2, loc.getY() + 2, this->id);
+                g.printer.print_closed_locker(loc.getX(), loc.getY());
+                number_lock = loc.getId() - 1;
                 loc.setIsFree(false);
                 loc.setOwner(id);
                 loc.getMutex().unlock();
@@ -147,12 +127,12 @@ void client::locker_room() {
                 // Czas przebierania
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-                printClientClear(loc.getX() + 2,loc.getY() + 2);
+                g.printer.clear_client(loc.getX() + 2, loc.getY() + 2);
 
                 break;
             }
-
         }
+        loc.getMutex().unlock();
     }
 }
 
@@ -168,32 +148,37 @@ void client::training(){
 //        else if (number <= 99)
 //            std::this_thread::sleep_for(std::chrono::milliseconds(50)); //zajęcia grupowe
 //        else
-//            std::this_thread::sleep_for(std::chrono::milliseconds(50)); //wychodze elo
+//            std::this_thread::sleep_for(std::chrono::milliseconds(50)); //wychodze
 //
 //        crossfit();
 //
 //        number_of_action++;
 //    }
 
-    take_bench();
+    crossfit();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    leave();
 
 
 
 }
 
 
+
+
 void client::crossfit(){
-    std::unique_lock<std::mutex> lockNumber(g.cross.mutex);
-    if(g.cross.clients < 3) {
-        int x = g.cross.clients;
-        printClient(137 + x * 25,17 + 1,id);
-        g.cross.clients++;
+    std::unique_lock<std::mutex> lockNumber(g.cross.getMutex());
+    if(g.cross.getClients() < 3) {
+        int x = g.cross.getClients();
+        g.printer.print_client(137 + x * 25, 17 + 1, id);
+        g.cross.setClients(g.cross.getClients()+1);
         lockNumber.unlock();
         g.cross.wait_for_training();
-        printClientClear(137 + x * 25,17 + 1);
+        g.printer.clear_client(137 + x * 25, 17 + 1);
 
     }else{
-        printClient(123,28,id);
+        g.printer.print_client(123, 28, id);
         lockNumber.unlock();
     }
 }
@@ -205,15 +190,16 @@ void client::take_bench(){
 
         for (int i = 0; i < 3; i++) {
             bench &bench = g.getBenches().at(i);
-            if (bench.mutex.try_lock()) {
-                printClient(bench.x,bench.y,id);
+            if (bench.getMutex().try_lock()) {
+                g.printer.print_client(bench.getX(), bench.getY(), id);
                 chest_press(bench);
 
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-                bench.mutex.unlock();
+                bench.getMutex().unlock();
                 break;
             }
+
         }
 
         attempt++;
@@ -223,60 +209,42 @@ void client::take_bench(){
     }
 }
 
-void client::printLoad(int xPosition, int yPosition,int weight){
-    init_pair(15,COLOR_WHITE, 16);
-    attron(COLOR_PAIR(15));
 
-    mvprintw(yPosition,xPosition," %d ",weight);
-
-
-    attroff(COLOR_PAIR(15));
-}
-
-void client::print_clear_load(int xPosition, int yPosition){
-    init_pair(18,COLOR_BLACK, COLOR_BLACK);
-    attron(COLOR_PAIR(18));
-
-    mvprintw(yPosition,xPosition,"   ");
-
-    attroff(COLOR_PAIR(18));
-
-}
 
 void client::chest_press(bench &ben){
-    mvprintw(20,205,"A");
-    //waga klienta 80 czyli 60 kg ciężarach
-//    int chest_weight = int(weight * 0.8);
-
-    int chest_weight = 200;
-    //Waga klienta * 0.8 - 2 * waga ciężarka >= 0
-    if (chest_weight - 2 * 40 >= 0 ){
-        chest_weight -= 2 * 40;
-
-        load &load1 = g.getLoads().at(12);
-
-        load &load2 = g.getLoads().at(13);
-        mvprintw(20,206,"B");
-        int result = load1.request();
-        mvprintw(20,207,"C");
-        printLoad(ben.x - 3,ben.y + 3,load1.weight);
-
-        int result2 = load2.request();
-
-        printLoad(ben.x + 3,ben.y + 3,load1.weight);
-        mvprintw(20,208,"D");
-        printLoad(load2.x,load2.y,load2.weight);
-
-        std::unique_lock<std::mutex> lockLoad1(load1.getMutex());
-        std::unique_lock<std::mutex> lockLoad2(load2.getMutex());
-
-        if(result == 1 || result2 == 1){
-            lockLoad1.unlock();
-            lockLoad2.unlock();
-            load1.done_using();
-            load2.done_using();
-        }
-    }
+//    mvprintw(20,205,"A");
+//    //waga klienta 80 czyli 60 kg ciężarach
+////    int chest_weight = int(weight * 0.8);
+//
+//    int chest_weight = 200;
+//    //Waga klienta * 0.8 - 2 * waga ciężarka >= 0
+//    if (chest_weight - 2 * 40 >= 0 ){
+//        chest_weight -= 2 * 40;
+//
+//        disc &load1 = g.getLoads().at(12);
+//
+//        disc &load2 = g.getLoads().at(13);
+//        mvprintw(20+id,206,"B");
+//        int result = load1.request();
+//        mvprintw(20+id,207,"C");
+//        printLoad(ben.x - 3,ben.y + 3,load1.weight);
+//
+//        int result2 = load2.request();
+//
+//        printLoad(ben.x + 3,ben.y + 3,load1.weight);
+//        mvprintw(20,208,"D");
+//        printLoad(load2.x,load2.y,load2.weight);
+//
+//        std::unique_lock<std::mutex> lockLoad1(load1.getMutex());
+//        std::unique_lock<std::mutex> lockLoad2(load2.getMutex());
+//
+//        if(result == 1 || result2 == 1){
+//            lockLoad1.unlock();
+//            lockLoad2.unlock();
+//            load1.done_using();
+//            load2.done_using();
+//        }
+//    }
 
 
 
@@ -288,9 +256,9 @@ void client::chest_press(bench &ben){
 //            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 //
 //            for (int i = 0; i < 3; i++) {
-//                load &load3 = g.getLoads().at(i);
+//                disc &load3 = g.getLoads().at(i);
 //                if (load3.getMutex().try_lock()) {
-//                    printClient(bench.x,bench.y,id);
+//                    print_client(bench.x,bench.y,id);
 //                    chest_press();
 //
 //
@@ -323,7 +291,53 @@ void client::chest_press(bench &ben){
 
 }
 
+void client::leave(){
+
+    g.printer.print_client(60, 15, this->id);
+
+//    mvprintw(%id 20+id,205,"%dA",id);
+    while(true){
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        locker &loc = g.getLockers().at(number_lock);
+        if (loc.getMutex().try_lock()){
+            g.printer.clear_client(60, 15);
+
+
+            g.printer.print_client(loc.getX() + 2, loc.getY() + 2, this->id);
+            g.printer.print_opened_locker(loc.getX(), loc.getY());
+            std::this_thread::sleep_for(std::chrono::milliseconds(4000));
+            loc.setIsFree(true);
+            loc.setOwner(-1);
+            g.printer.clear_client(loc.getX() + 2, loc.getY() + 2);
+            loc.getMutex().unlock();
+            break;
+        }
+    }
+
+    g.printer.print_client(60, 15, this->id);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    g.printer.print_client(15, 26, this->id);
+
+    std::unique_lock<std::mutex> lockNumber(g.getMutexNumber());
+
+    g.setCurrentClients(g.getCurrentClients() - 1);
+
+    lockNumber.unlock();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+    g.printer.clear_client(15, 26);
+
+//    lifeline.join();
+}
+
 
 int client::get_id() {
     return id;
+}
+
+std::thread &client::getLifeline(){
+    return lifeline;
 }

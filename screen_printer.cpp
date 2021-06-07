@@ -1,5 +1,113 @@
 #include "screen_printer.h"
 #include "ncurses.h"
+#include "client.h"
+
+
+void screen_printer::print_client(int x, int y, int id) {
+//    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(7,COLOR_BLACK, COLOR_YELLOW);
+    attron(COLOR_PAIR(7));
+    mvprintw(y,x,"    ");
+    mvprintw(y+1,x,"  %2d",id);
+    attroff(COLOR_PAIR(7));
+    refresh();
+}
+
+void screen_printer::clear_client(int x, int y) {
+//    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(8,COLOR_BLACK, COLOR_BLACK);
+    attron(COLOR_PAIR(8));
+    mvprintw(y,x,"XXXX");
+    mvprintw(y+1,x,"XXXX");
+    attroff(COLOR_PAIR(8));
+    refresh();
+}
+
+void screen_printer::printLoad(int xPosition, int yPosition,int weight){
+    init_pair(15,COLOR_WHITE, 16);
+    attron(COLOR_PAIR(15));
+
+    mvprintw(yPosition,xPosition," %d ",weight);
+
+
+    attroff(COLOR_PAIR(15));
+}
+
+void screen_printer::print_clear_load(int xPosition, int yPosition){
+    init_pair(18,COLOR_BLACK, COLOR_BLACK);
+    attron(COLOR_PAIR(18));
+
+    mvprintw(yPosition,xPosition,"   ");
+
+    attroff(COLOR_PAIR(18));
+
+}
+
+
+void screen_printer::print_opened_locker(int x, int y) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(12, COLOR_BLACK, COLOR_BLACK);
+    attron(COLOR_PAIR(12));
+    mvprintw(y + 1, x + 1, "      ");
+    attroff(COLOR_PAIR(12));
+    refresh();
+}
+
+void screen_printer::print_closed_locker(int x, int y) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(12, COLOR_BLACK, COLOR_RED);
+    attron(COLOR_PAIR(12));
+    mvprintw(y + 1, x + 1, "      ");
+    attroff(COLOR_PAIR(12));
+    refresh();
+}
+
+
+
+
+
+void screen_printer::print_receptionist(int x, int y) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(9,COLOR_BLACK, COLOR_RED);
+    attron(COLOR_PAIR(9));
+    mvprintw(y,x,"    ");
+    mvprintw(y+1,x,"    ");
+    attroff(COLOR_PAIR(9));
+    refresh();
+}
+
+void screen_printer::clear_receptionist(int x, int y) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(10,COLOR_BLACK, COLOR_BLACK);
+    attron(COLOR_PAIR(10));
+    mvprintw(y,x,"    ");
+    mvprintw(y+1,x,"    ");
+    attroff(COLOR_PAIR(10));
+    refresh();
+}
+
+void screen_printer::print_trainer(int x, int y) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(14,COLOR_BLACK, COLOR_GREEN);
+    attron(COLOR_PAIR(14));
+    mvprintw(y,x,"     ");
+    mvprintw(y+1,x,"     ");
+
+    attroff(COLOR_PAIR(14));
+    refresh();
+}
+
+void screen_printer::clear_trainer(int x, int y) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(10,COLOR_BLACK, COLOR_BLACK);
+    attron(COLOR_PAIR(10));
+    mvprintw(y,x,"     ");
+    mvprintw(y+1,x,"     ");
+    attroff(COLOR_PAIR(10));
+    refresh();
+}
 
 void screen_printer::printBench(int xPosition,int yPosition){
     init_pair(2,COLOR_BLACK, COLOR_RED);
@@ -60,18 +168,6 @@ void screen_printer::printMat(int xPosition, int yPosition){
 
     attroff(COLOR_PAIR(6));
 }
-
-void screen_printer::printLoad(int xPosition, int yPosition,int weight){
-    init_pair(15,COLOR_WHITE, 16);
-    attron(COLOR_PAIR(15));
-
-    mvprintw(yPosition,xPosition," %d ",weight);
-
-
-    attroff(COLOR_PAIR(15));
-}
-
-
 
 void screen_printer::printGym() {
 
@@ -185,3 +281,14 @@ void screen_printer::printGym() {
     refresh();
 
 }
+
+std::mutex &screen_printer::getMutex(){
+    return print_mutex;
+}
+
+
+
+
+
+
+

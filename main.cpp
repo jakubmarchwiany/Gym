@@ -23,6 +23,8 @@ void prepareSimulation(){
         ch = getch();
     } while(ch != 27);
 
+    g.stop();
+
 }
 
 int main() {

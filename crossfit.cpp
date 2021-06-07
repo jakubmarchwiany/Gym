@@ -25,3 +25,33 @@ void crossfit::info()
 {
     channel.notify_all();
 }
+
+bool crossfit::isStart(){
+    return start;
+}
+
+int crossfit::getAttempt(){
+    return attempt;
+}
+
+int crossfit::getClients(){
+    return clients;
+}
+
+std::mutex &crossfit::getMutex(){
+    return mutex;
+}
+
+void crossfit::setStart(bool start) {
+    crossfit::start = start;
+}
+
+void crossfit::setAttempt(int attempt) {
+    crossfit::attempt = attempt;
+}
+
+void crossfit::setClients(int clients) {
+    crossfit::clients = clients;
+}
+
+

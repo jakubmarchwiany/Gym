@@ -18,7 +18,7 @@
 #include "crossfit.h"
 #include "trainer.h"
 #include "bench.h"
-#include "load.h"
+#include "disc.h"
 
 class client;
 class receptionist;
@@ -26,43 +26,37 @@ class trainer;
 
 
 
+
 class gym {
 public:
     gym();
-    void makeQueue();
-    void run();
 
     reception rec;
-
     receptionist *recept;
 
     crossfit cross;
-
     trainer* trai;
 
-    std::mutex mutex_print;
-    std::mutex mutex_number;
-
-
     screen_printer printer;
-    int getCurrentClients();
 
     std::array<place_in_line, 10> &getLine();
-
-
-    std::array<load, 14> &getLoads();
-
     std::array<bench, 3> &getBenches();
     std::array<locker, 17> &getLockers();
 
 
+    void run();
+    void stop();
+
+
+    std::mutex &getMutexNumber();
+    int getCurrentClients();
     void setCurrentClients(int currentClients);
 
 private:
     std::atomic<bool> done = false;
     int number_of_client{ 0 };
     int current_clients{0};
-
+    std::mutex mutex_number;
 
     std::mt19937 rng{ std::random_device{}() };
 
@@ -71,25 +65,6 @@ private:
         bench(41,50),
         bench(56,50)
     };
-
-    std::array<load,14> loads {
-            load(1, 20 , 65,5),
-            load(2, 20 , 67,5),
-            load(3, 20 , 69,5),
-            load(4, 20 , 71,5),
-            load(5, 25 , 65,10),
-            load(6, 25 , 67,10),
-            load(7, 25 , 69,10),
-            load(8, 25 , 71,10),
-            load(9, 25 , 65,20),
-            load(10, 30 , 67,20),
-            load(11, 30 , 69,20),
-            load(12, 30 , 71,20),
-            load(13, 35 , 65,40),
-            load(14, 30 , 67,40),
-    };
-
-
 
     std::vector<std::unique_ptr<client>> clients;
     std::array<place_in_line, 10> line {
@@ -125,7 +100,9 @@ private:
             locker(17,121,13)
     };
 
-
+    void makeQueue();
+    void makeQueue2();
+    void makeQueue3();
 };
 
 #endif //UNTITLED3_GYM_H

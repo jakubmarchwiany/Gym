@@ -11,17 +11,14 @@ public:
 
     std::mutex &getMutex();
 
-
     int getX();
     int getY();
-
+    int getId();
     bool isFree();
     void setIsFree(bool isFree);
     void setOwner(int owner);
 
 private:
-
-
     int id;
     int x, y;
     int owner = -1;

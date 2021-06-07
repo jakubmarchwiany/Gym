@@ -1,56 +1,41 @@
 #include "receptionist.h"
 
-receptionist::receptionist(gym& g) : g(g), lifeline(&receptionist::work, this) {}
-
-void receptionist::printReceptionist(int x, int y) {
-    std::lock_guard<std::mutex> print_lock(g.mutex_print);
-    init_pair(9,COLOR_BLACK, COLOR_RED);
-    attron(COLOR_PAIR(9));
-    mvprintw(y,x,"    ");
-    mvprintw(y+1,x,"    ");
-    attroff(COLOR_PAIR(9));
-    refresh();
-}
-
-void receptionist::clear(int x, int y) {
-    std::lock_guard<std::mutex> print_lock(g.mutex_print);
-    init_pair(10,COLOR_BLACK, COLOR_BLACK);
-    attron(COLOR_PAIR(10));
-    mvprintw(y,x,"    ");
-    mvprintw(y+1,x,"    ");
-    attroff(COLOR_PAIR(10));
-    refresh();
-}
+receptionist::receptionist(gym& g,std::atomic<bool> &done) : g(g), lifeline(&receptionist::work, this),done(done) {}
 
 void receptionist::work(){
-    while(true)
-    {
+    do{
         waitingForClient();
 
         browsingFacebook();
+    }while(!done);
 
-    }
 }
 
 void receptionist::browsingFacebook() {
-    printReceptionist(30,15);
+    g.printer.print_receptionist(30, 15);
     std::this_thread::sleep_for(std::chrono::milliseconds(2870));
-    clear(30,15);
+    g.printer.clear_receptionist(30, 15);
 }
 
 void receptionist::waitingForClient() {
-    printReceptionist(20,10);
+    g.printer.print_receptionist(20, 10);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(2960));
 
-    std::unique_lock<std::mutex> number_lock(g.mutex_number);
+    std::unique_lock<std::mutex> number_lock(g.getMutexNumber());
+
 
     if(g.getCurrentClients() < 5) {
         g.rec.setFree(true);
         g.rec.release();
-        number_lock.unlock();
+
     }
-    clear(20,10);
+    number_lock.unlock();
+    g.printer.clear_receptionist(20, 10);
 
 
+}
+
+std::thread &receptionist::getLifeline(){
+    return lifeline;
 }

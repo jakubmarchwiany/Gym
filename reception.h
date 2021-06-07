@@ -13,7 +13,6 @@ public:
     void release();
 
     void setFree(bool free);
-
     std::mutex &getMutex();
 private:
     int owner=-1;
@@ -21,9 +20,6 @@ private:
     std::mutex mutex;
     sync_channel channel;
     std::mt19937 rng{ std::random_device{}() };
-
-
-
 };
 
 #endif

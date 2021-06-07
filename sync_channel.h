@@ -6,13 +6,13 @@
 #include <condition_variable>
 
 class sync_channel {
-    public:
-        void wait();
-        void notify_all();
+public:
+    void wait();
+    void notify_all();
 
-    private:
-        std::mutex mutex;
-        std::condition_variable condition;
+private:
+    std::mutex mutex;
+    std::condition_variable condition;
 };
 
 #endif

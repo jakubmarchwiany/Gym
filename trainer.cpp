@@ -1,70 +1,55 @@
 #include "trainer.h"
 
-trainer::trainer(gym& g) : g(g), lifeline(&trainer::work, this) {}
+trainer::trainer(gym& g,std::atomic<bool> &done) : g(g), lifeline(&trainer::work, this),done(done) {}
 
-void trainer::printTrainer(int x, int y) {
-    std::lock_guard<std::mutex> print_lock(g.mutex_print);
-    init_pair(14,COLOR_BLACK, COLOR_GREEN);
-    attron(COLOR_PAIR(14));
-    mvprintw(y,x,"     ");
-    mvprintw(y+1,x,"     ");
 
-    attroff(COLOR_PAIR(14));
-    refresh();
-}
-
-void trainer::clear(int x, int y) {
-    std::lock_guard<std::mutex> print_lock(g.mutex_print);
-    init_pair(10,COLOR_BLACK, COLOR_BLACK);
-    attron(COLOR_PAIR(10));
-    mvprintw(y,x,"     ");
-    mvprintw(y+1,x,"     ");
-    attroff(COLOR_PAIR(10));
-    refresh();
-}
 
 void trainer::work(){
-
-    while(true){
+    do{
         coffee_time();
         check();
-    }
+    }while(!done);
 }
 
 void trainer::coffee_time() {
-    printTrainer(43,13);
+    g.printer.print_trainer(43, 13);
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-    clear(43,13);
+    g.printer.clear_trainer(43, 13);
 }
 
 void trainer::check() {
-    printTrainer(162,10);
+    g.printer.print_trainer(162, 10);
 
-    std::unique_lock<std::mutex> lock(g.cross.mutex);
-    if (g.cross.clients == 3){
-        g.cross.attempt = 0;
-        g.cross.start = true;
+    std::unique_lock<std::mutex> lock(g.cross.getMutex());
+    if (g.cross.getClients()== 3){
+        g.cross.setAttempt(0);
+        g.cross.setStart(true);
         lock.unlock();
         g.cross.info();
         std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 
-        std::unique_lock<std::mutex> lock2(g.cross.mutex);
-        g.cross.start = false;
-        g.cross.clients = 0;
+        std::unique_lock<std::mutex> lock2(g.cross.getMutex());
+        g.cross.setStart(false);
+        g.cross.setClients(0);
         lock2.unlock();
 
-    }else{
-
+    }else if (g.cross.getClients() > 0){
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 //        mvprintw(15,205,"Ilosc prob %d",g.cross.attempt);
-        g.cross.attempt++;
+        g.cross.setAttempt(g.cross.getAttempt()+1);
+        lock.unlock();
+        g.cross.info();
+    }else{
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         lock.unlock();
         g.cross.info();
     }
 
-    clear(162,10);
+    g.printer.clear_trainer(162, 10);
 }
 
-void trainer::lesson() {
 
+
+std::thread &trainer::getLifeline(){
+    return lifeline;
 }

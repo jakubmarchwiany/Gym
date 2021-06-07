@@ -25,3 +25,7 @@ void locker::setIsFree(bool isFree) {
 void locker::setOwner(int owner) {
     locker::owner = owner;
 }
+
+int locker::getId(){
+    return id;
+}
