@@ -18,13 +18,13 @@
 #include "crossfit.h"
 #include "trainer.h"
 #include "bench.h"
-#include "disc.h"
+#include "disc_rack.h"
+#include "disc_rack_2.h"
+#include "deadlift_position.h"
 
 class client;
 class receptionist;
 class trainer;
-
-
 
 
 class gym {
@@ -41,8 +41,12 @@ public:
 
     std::array<place_in_line, 10> &getLine();
     std::array<bench, 3> &getBenches();
+    std::array<deadlift_position, 3> &getDeadliftes();
     std::array<locker, 17> &getLockers();
 
+
+    disc_rack disces_chest_press;
+    disc_rack_2 disces_deadlift;
 
     void run();
     void stop();
@@ -65,6 +69,14 @@ private:
         bench(41,50),
         bench(56,50)
     };
+
+    std::array<deadlift_position,3> deadliftes {
+            deadlift_position(100,51),
+            deadlift_position(125,51),
+            deadlift_position(150,51)
+    };
+
+
 
     std::vector<std::unique_ptr<client>> clients;
     std::array<place_in_line, 10> line {
@@ -99,6 +111,8 @@ private:
             locker(16,114,13),
             locker(17,121,13)
     };
+
+
 
     void makeQueue();
     void makeQueue2();

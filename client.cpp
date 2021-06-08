@@ -10,6 +10,7 @@ void client::visit() {
         // Wejście do kolejki
         in_line();
         // Wejście do recepcji
+
         reception();
         // Wejście do szatni
         locker_room();
@@ -19,8 +20,6 @@ void client::visit() {
 //    }while(!done);
 
 }
-
-
 
 
 void client::in_line() {
@@ -99,7 +98,6 @@ void client::reception() {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-
 }
 
 
@@ -107,8 +105,6 @@ void client::locker_room() {
     g.printer.print_client(60, 15, this->id);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-
 
     for(int i =0;i<17;i++){
         locker & loc = g.getLockers().at(i);
@@ -138,33 +134,26 @@ void client::locker_room() {
 
 void client::training(){
 
-//    while(number_of_action < 4){
-//        int number = rand() % 101;
-//
-//        if (number <= 33)
-//            std::this_thread::sleep_for(std::chrono::milliseconds(50)); //klata
-//        else if (number <= 66)
-//            std::this_thread::sleep_for(std::chrono::milliseconds(50)); //martwy
-//        else if (number <= 99)
-//            std::this_thread::sleep_for(std::chrono::milliseconds(50)); //zajęcia grupowe
-//        else
-//            std::this_thread::sleep_for(std::chrono::milliseconds(50)); //wychodze
-//
-//        crossfit();
-//
-//        number_of_action++;
-//    }
+    while(number_of_action < 4){
+        int number = rand() % 101;
 
-    crossfit();
+        if (number <= 33)
+            take_bench();
+        else if (number <= 66)
+            take_deadlift_spot();
+        else if (number <= 99)
+            crossfit();
+        else
+            leave();
+
+        number_of_action++;
+    }
+
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     leave();
 
-
-
 }
-
-
 
 
 void client::crossfit(){
@@ -180,11 +169,42 @@ void client::crossfit(){
     }else{
         g.printer.print_client(123, 28, id);
         lockNumber.unlock();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+}
+
+void client::take_deadlift_spot(){
+    int attempt = 0;
+    bool end = false;
+    while(true) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+        for (int i = 0; i < 3; i++) {
+            deadlift_position &d_l_position = g.getDeadliftes().at(i);
+            if (d_l_position.getMutex().try_lock()) {
+                g.printer.print_client(d_l_position.getX()+4, d_l_position.getY()+3, id);
+
+                deadlift(d_l_position);
+
+                g.printer.clear_client(d_l_position.getX()+4, d_l_position.getY()+3);
+                d_l_position.getMutex().unlock();
+                end = true;
+                break;
+            }
+
+        }
+
+        attempt++;
+        if (attempt == 10 || end)
+            break;
+
+    }
+
 }
 
 void client::take_bench(){
     int attempt = 0;
+    bool end = false;
     while(true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -195,99 +215,99 @@ void client::take_bench(){
                 chest_press(bench);
 
 
-                std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+                g.printer.clear_client(bench.getX(), bench.getY());
                 bench.getMutex().unlock();
+                end = true;
                 break;
             }
 
         }
 
         attempt++;
-        if (attempt == 10)
+        if (attempt == 10 || end)
             break;
 
     }
 }
 
+void client::deadlift(deadlift_position &d_l_Position){
+    int weight = 80;
+    auto disces_index = g.disces_deadlift.request(weight);
 
+//    for (int i = 0; i < disces_index.size(); ++i) {
+//        mvprintw(20+i,200+id*3,"%d",disces_index[i]);
+//    }
+    int weight_left=0;
+    int l = 0;
+    int r = 0;
+    for(const auto& d: disces_index){
+        disc disc1 = g.disces_deadlift.getLoads().at(d);
+        g.printer.print_clear_load(disc1.getX(),disc1.getY());
+
+
+        if (weight_left < weight/2){
+            g.printer.printLoad(d_l_Position.getX() - 5, d_l_Position.getY() - l + 5, disc1.getWeight());
+            weight_left+=disc1.getWeight();
+            l += 2;
+        }else{
+            g.printer.printLoad(d_l_Position.getX() + 13, d_l_Position.getY() - r + 5, disc1.getWeight());
+            r +=2;
+        }
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+
+    g.printer.clear_deadlift(d_l_Position.getX(), d_l_Position.getY() + 6);
+
+
+    for(const auto& d: disces_index) {
+        disc disc1 = g.disces_deadlift.getLoads().at(d);
+
+        g.printer.printLoad(disc1.getX(),disc1.getY(),disc1.getWeight());
+    }
+
+    g.disces_deadlift.put_back(disces_index);
+
+}
 
 void client::chest_press(bench &ben){
-//    mvprintw(20,205,"A");
-//    //waga klienta 80 czyli 60 kg ciężarach
-////    int chest_weight = int(weight * 0.8);
-//
-//    int chest_weight = 200;
-//    //Waga klienta * 0.8 - 2 * waga ciężarka >= 0
-//    if (chest_weight - 2 * 40 >= 0 ){
-//        chest_weight -= 2 * 40;
-//
-//        disc &load1 = g.getLoads().at(12);
-//
-//        disc &load2 = g.getLoads().at(13);
-//        mvprintw(20+id,206,"B");
-//        int result = load1.request();
-//        mvprintw(20+id,207,"C");
-//        printLoad(ben.x - 3,ben.y + 3,load1.weight);
-//
-//        int result2 = load2.request();
-//
-//        printLoad(ben.x + 3,ben.y + 3,load1.weight);
-//        mvprintw(20,208,"D");
-//        printLoad(load2.x,load2.y,load2.weight);
-//
-//        std::unique_lock<std::mutex> lockLoad1(load1.getMutex());
-//        std::unique_lock<std::mutex> lockLoad2(load2.getMutex());
-//
-//        if(result == 1 || result2 == 1){
-//            lockLoad1.unlock();
-//            lockLoad2.unlock();
-//            load1.done_using();
-//            load2.done_using();
-//        }
+
+    int weight = 80;
+    auto disces_index = g.disces_chest_press.request(weight);
+
+//    for (int i = 0; i < disces_index.size(); ++i) {
+//        mvprintw(20+i,200+id*3,"%d",disces_index[i]);
 //    }
+    int weight_left=0;
+    int l = 0;
+    int r = 0;
+    for(const auto& d: disces_index){
+        disc disc1 = g.disces_chest_press.getLoads().at(d);
+        g.printer.print_clear_load(disc1.getX(),disc1.getY());
 
 
+        if (weight_left < weight/2){
+            g.printer.printLoad(ben.getX()-5, ben.getY()-l+6,disc1.getWeight());
+            weight_left+=disc1.getWeight();
+            l += 2;
+        }else{
+            g.printer.printLoad(ben.getX()+5,ben.getY()-r+6,disc1.getWeight());
+            r +=2;
+        }
+    }
 
-//    if (chest_weight - 2 * 20 >= 0 ){
-//        chest_weight -= 2 * 20;
-//
-//        int attempt = 0;
-//        while(true) {
-//            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-//
-//            for (int i = 0; i < 3; i++) {
-//                disc &load3 = g.getLoads().at(i);
-//                if (load3.getMutex().try_lock()) {
-//                    print_client(bench.x,bench.y,id);
-//                    chest_press();
-//
-//
-//                    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-//                    bench.mutex.unlock();
-//                    break;
-//                }
-//            }
-//
-//            attempt++;
-//            if (attempt == 10)
-//                break;
-//
-//        }
-//
-//
-//    }
-//
-//    if (chest_weight - 2 * 10 >= 0 ){
-//        chest_weight -= 2 * 10;
-//
-//    }
-//
-//    if (chest_weight - 2 * 5 >= 0 ){
-//
-//
-//    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
 
-    //ćwicz
+    g.printer.clear_bench(ben.getX(),ben.getY()+6);
+
+
+    for(const auto& d: disces_index) {
+        disc disc1 = g.disces_chest_press.getLoads().at(d);
+
+        g.printer.printLoad(disc1.getX(),disc1.getY(),disc1.getWeight());
+    }
+
+    g.disces_chest_press.put_back(disces_index);
 
 }
 
@@ -330,8 +350,10 @@ void client::leave(){
 
     g.printer.clear_client(15, 26);
 
-//    lifeline.join();
 }
+
+
+
 
 
 int client::get_id() {

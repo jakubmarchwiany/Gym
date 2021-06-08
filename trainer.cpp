@@ -2,8 +2,6 @@
 
 trainer::trainer(gym& g,std::atomic<bool> &done) : g(g), lifeline(&trainer::work, this),done(done) {}
 
-
-
 void trainer::work(){
     do{
         coffee_time();

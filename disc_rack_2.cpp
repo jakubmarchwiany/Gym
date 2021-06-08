@@ -1,12 +1,10 @@
 //
-// Created by kuba on 02.06.2021.
+// Created by kuba on 07.06.2021.
 //
 
-#include <vector>
-#include "disc_rack.h"
-#include "ncurses.h"
+#include "disc_rack_2.h"
 
-std::vector<int> disc_rack::request(int weight)
+std::vector<int> disc_rack_2::request(int weight)
 {
 
     int attempt = 0;
@@ -22,7 +20,7 @@ std::vector<int> disc_rack::request(int weight)
         }else if (attempt == 5){
             lock.unlock();
             //nie udało się wziąc ciężarów
-            mvprintw(20,210,"%d ",attempt);
+
             return disces;
         }else{
             attempt++;
@@ -32,7 +30,7 @@ std::vector<int> disc_rack::request(int weight)
     }
 }
 
-void disc_rack::put_back(std::vector<int> disces)
+void disc_rack_2::put_back(std::vector<int> disces)
 {
     std::unique_lock<std::mutex> lock(mutex);
     for(const auto& d: disces)
@@ -42,7 +40,7 @@ void disc_rack::put_back(std::vector<int> disces)
 }
 
 
-std::vector<int> disc_rack::try_get_disces(int weight){
+std::vector<int> disc_rack_2::try_get_disces(int weight){
 
     //60kg
 
@@ -104,6 +102,6 @@ std::vector<int> disc_rack::try_get_disces(int weight){
 
 }
 
-std::array<disc, 14> &disc_rack::getLoads(){
+std::array<disc, 14> &disc_rack_2::getLoads(){
     return loads;
 }

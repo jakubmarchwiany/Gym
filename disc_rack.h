@@ -12,34 +12,35 @@
 class disc_rack {
 public:
 
-    void request();
-    void info();
 
+    std::vector<int> request(int weight);
+    void put_back(std::vector<int> disces);
+
+
+    std::vector<int> try_get_disces(int weight);
+
+    std::array<disc, 14> &getLoads();
+
+private:
     std::mutex mutex;
     sync_channel channel;
 
     std::array<disc,14> loads {
-            disc(1,20 , 65, 5),
-            disc(2,20 , 67, 5),
-            disc(3,20 , 69, 5),
-            disc(4,20 , 71, 5),
-            disc(5,25 , 65, 10),
-            disc(6,25 , 67, 10),
-            disc(7,25 , 69, 10),
-            disc(8,25 , 71, 10),
-            disc(9,25 , 65, 20),
-            disc(10,30 , 67, 20),
-            disc(11,30 , 69, 20),
-            disc(12,30 , 71, 20),
-            disc(13,35 , 65, 40),
-            disc(14,30 , 67, 40),
+            disc(0,20 , 37, 5),
+            disc(1,20 , 39, 5),
+            disc(2,20 , 41, 5),
+            disc(3,20 , 43, 5),
+            disc(4,25 , 37, 10),
+            disc(5,25 , 39, 10),
+            disc(6,25 , 41, 10),
+            disc(7,25 , 43, 10),
+            disc(8,25 , 37, 20),
+            disc(9,30 , 39, 20),
+            disc(10,30 , 41, 20),
+            disc(11,30 , 43, 20),
+            disc(12,35 , 37, 40),
+            disc(13,35 , 39, 40),
     };
-
-    int request(int weight);
-
-    std::vector<int> try_get_disces(int weight);
-
-private:
 
 };
 

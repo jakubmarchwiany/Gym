@@ -10,6 +10,13 @@ public:
     disc(int id, int x, int y, int weight);
 
     bool getIsFree();
+
+    int getWeight();
+
+    int getX();
+
+    int getY();
+
     void setIsFree(bool isFree);
 private:
 

@@ -56,6 +56,7 @@ void gym::makeQueue2() {
                 line.at(first_free).getMutex().unlock();
                 break;
             }
+
             first_free++;
 
             if(first_free == 9){
@@ -120,6 +121,10 @@ std::array<bench, 3> &gym::getBenches(){
 
 std::mutex &gym::getMutexNumber(){
     return mutex_number;
+}
+
+std::array<deadlift_position, 3> &gym::getDeadliftes(){
+    return deadliftes;
 }
 
 

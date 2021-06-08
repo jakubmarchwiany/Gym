@@ -10,6 +10,18 @@ void disc::setIsFree(bool isFree) {
     disc::isFree = isFree;
 }
 
+int disc::getWeight(){
+    return weight;
+}
+
+int disc::getX(){
+    return x;
+}
+
+int disc::getY(){
+    return y;
+}
+
 
 
 

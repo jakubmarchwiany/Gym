@@ -1,10 +1,9 @@
 #include "screen_printer.h"
 #include "ncurses.h"
-#include "client.h"
+
 
 
 void screen_printer::print_client(int x, int y, int id) {
-//    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     std::lock_guard<std::mutex> print_lock(print_mutex);
     init_pair(7,COLOR_BLACK, COLOR_YELLOW);
     attron(COLOR_PAIR(7));
@@ -15,7 +14,6 @@ void screen_printer::print_client(int x, int y, int id) {
 }
 
 void screen_printer::clear_client(int x, int y) {
-//    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     std::lock_guard<std::mutex> print_lock(print_mutex);
     init_pair(8,COLOR_BLACK, COLOR_BLACK);
     attron(COLOR_PAIR(8));
@@ -24,49 +22,6 @@ void screen_printer::clear_client(int x, int y) {
     attroff(COLOR_PAIR(8));
     refresh();
 }
-
-void screen_printer::printLoad(int xPosition, int yPosition,int weight){
-    init_pair(15,COLOR_WHITE, 16);
-    attron(COLOR_PAIR(15));
-
-    mvprintw(yPosition,xPosition," %d ",weight);
-
-
-    attroff(COLOR_PAIR(15));
-}
-
-void screen_printer::print_clear_load(int xPosition, int yPosition){
-    init_pair(18,COLOR_BLACK, COLOR_BLACK);
-    attron(COLOR_PAIR(18));
-
-    mvprintw(yPosition,xPosition,"   ");
-
-    attroff(COLOR_PAIR(18));
-
-}
-
-
-void screen_printer::print_opened_locker(int x, int y) {
-    std::lock_guard<std::mutex> print_lock(print_mutex);
-    init_pair(12, COLOR_BLACK, COLOR_BLACK);
-    attron(COLOR_PAIR(12));
-    mvprintw(y + 1, x + 1, "      ");
-    attroff(COLOR_PAIR(12));
-    refresh();
-}
-
-void screen_printer::print_closed_locker(int x, int y) {
-    std::lock_guard<std::mutex> print_lock(print_mutex);
-    init_pair(12, COLOR_BLACK, COLOR_RED);
-    attron(COLOR_PAIR(12));
-    mvprintw(y + 1, x + 1, "      ");
-    attroff(COLOR_PAIR(12));
-    refresh();
-}
-
-
-
-
 
 void screen_printer::print_receptionist(int x, int y) {
     std::lock_guard<std::mutex> print_lock(print_mutex);
@@ -109,6 +64,41 @@ void screen_printer::clear_trainer(int x, int y) {
     refresh();
 }
 
+void screen_printer::printLoad(int xPosition, int yPosition,int weight){
+    init_pair(15,COLOR_WHITE, 16);
+    attron(COLOR_PAIR(15));
+    mvprintw(yPosition,xPosition," %d ",weight);
+    attroff(COLOR_PAIR(15));
+}
+
+void screen_printer::print_clear_load(int xPosition, int yPosition){
+    init_pair(22,COLOR_BLACK, COLOR_BLACK);
+    attron(COLOR_PAIR(22));
+    mvprintw(yPosition,xPosition,"    ");
+    attroff(COLOR_PAIR(22));
+}
+
+
+void screen_printer::print_opened_locker(int x, int y) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(12, COLOR_BLACK, COLOR_BLACK);
+    attron(COLOR_PAIR(12));
+    mvprintw(y + 1, x + 1, "      ");
+    attroff(COLOR_PAIR(12));
+    refresh();
+}
+
+void screen_printer::print_closed_locker(int x, int y) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(13, COLOR_BLACK, COLOR_RED);
+    attron(COLOR_PAIR(13));
+    mvprintw(y + 1, x + 1, "      ");
+    attroff(COLOR_PAIR(13));
+    refresh();
+}
+
+
+
 void screen_printer::printBench(int xPosition,int yPosition){
     init_pair(2,COLOR_BLACK, COLOR_RED);
     attron(COLOR_PAIR(2));
@@ -119,6 +109,41 @@ void screen_printer::printBench(int xPosition,int yPosition){
 
     attroff(COLOR_PAIR(2));
 }
+
+void screen_printer::clear_bench(int xPosition, int yPosition) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(30,COLOR_BLACK, COLOR_BLACK);
+
+    attron(COLOR_PAIR(30));
+
+    for(int y = 0;y < 12;y++)
+        mvprintw(yPosition - y,xPosition - 6,"     ");
+
+
+    for(int y = 0;y < 12;y++)
+        mvprintw(yPosition - y,xPosition + 5,"     ");
+
+    attroff(COLOR_PAIR(30));
+
+}
+
+void screen_printer::clear_deadlift(int xPosition, int yPosition) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(31,COLOR_BLACK, COLOR_BLACK);
+
+    attron(COLOR_PAIR(31));
+
+    for(int y = 0;y < 12;y++)
+        mvprintw(yPosition - y,xPosition - 6,"     ");
+
+
+    for(int y = 0;y < 12;y++)
+        mvprintw(yPosition - y,xPosition + 13,"     ");
+
+    attroff(COLOR_PAIR(31));
+
+}
+
 
 void screen_printer::printDeadlift(int xPosition,int yPosition){
     init_pair(3,COLOR_BLACK, COLOR_MAGENTA);
@@ -207,42 +232,40 @@ void screen_printer::printGym() {
 // Rysowanie Ławek do klaty
     printBench(26,52);
     printBench(41,52);
-//    printBench(56,52);
+    printBench(56,52);
 
 // Rysowanie miejsc do Martwego Ciągu
     printDeadlift(100,51);
     printDeadlift(125,51);
-//    printDeadlift(150,51);
+    printDeadlift(150,51);
 
 
 // Rysowanie ciężarów
 
     for(int i=0;i<8;){
         printLoad(20 , 37 + i,5);
+        printLoad(94,37 + i,5);
 
         i += 2;
     }
 
     for(int i=0;i<8;){
         printLoad(25 , 37 + i,10);
-
+        printLoad(99 , 37 + i,10);
         i += 2;
     }
 
     for(int i=0;i<8;){
         printLoad(30 , 37 + i,20);
-
+        printLoad(104 , 37 + i,20);
         i += 2;
     }
 
     for(int i=0;i<4;){
         printLoad(35 , 37 + i,40);
-
+        printLoad(109 , 37 + i,40);
         i += 2;
     }
-
-
-
 
 //    Szafki
 
@@ -257,10 +280,6 @@ void screen_printer::printGym() {
     printMat(135,17);
     printMat(160,17);
     printMat(185,17);
-//    printMat(135,27);
-//    printMat(160,27);
-//    printMat(185,27);
-
 
 //    Napisy
 
@@ -285,6 +304,7 @@ void screen_printer::printGym() {
 std::mutex &screen_printer::getMutex(){
     return print_mutex;
 }
+
 
 
 

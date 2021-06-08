@@ -26,12 +26,13 @@ public:
 
     void print_clear_load(int xPosition, int yPosition);
 
+    void clear_bench(int xPosition, int yPosition);
+
+    void clear_deadlift(int xPosition, int yPosition);
 
     void print_opened_locker(int x, int y);
 
     void print_closed_locker(int x, int y);
-
-
 
     void printBench(int xPosition, int yPosition);
 
@@ -45,6 +46,7 @@ public:
 
 private:
     std::mutex print_mutex;
+
 
 
 };

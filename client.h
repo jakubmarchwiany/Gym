@@ -7,6 +7,8 @@
 #include "locker.h"
 #include "disc.h"
 #include "bench.h"
+#include "deadlift_position.h"
+
 
 class gym;
 
@@ -39,7 +41,12 @@ private:
     void crossfit();
     void take_bench();
     void chest_press(bench &ben);
+    void take_deadlift_spot();
+    void deadlift(deadlift_position &d_l_Position);
     void leave();
+
+
+
 };
 
 #endif //UNTITLED3_CLIENT_H
