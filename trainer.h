@@ -13,6 +13,7 @@ private:
     gym& g;
     std::thread lifeline;
     std::atomic<bool> &done;
+    std::mt19937 rng{ std::random_device{}() };
 
     void coffee_time();
     void check();

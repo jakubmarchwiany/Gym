@@ -16,6 +16,7 @@ public:
 private:
     int id = -1;
     std::thread lifeline;
+    std::mt19937 rng{ std::random_device{}() };
 
     gym& g;
     std::atomic<bool> &done;

@@ -45,8 +45,6 @@ private:
     void deadlift(deadlift_position &d_l_Position);
     void leave();
 
-
-
 };
 
 #endif //UNTITLED3_CLIENT_H

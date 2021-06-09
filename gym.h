@@ -39,11 +39,12 @@ public:
 
     screen_printer printer;
 
-    std::array<place_in_line, 10> &getLine();
+
     std::array<bench, 3> &getBenches();
     std::array<deadlift_position, 3> &getDeadliftes();
     std::array<locker, 17> &getLockers();
 
+    std::array<place_in_line, 10> &getLine();
 
     disc_rack disces_chest_press;
     disc_rack_2 disces_deadlift;
@@ -53,6 +54,9 @@ public:
 
 
     std::mutex &getMutexNumber();
+
+    int *getIntsWeight();
+
     int getCurrentClients();
     void setCurrentClients(int currentClients);
 
@@ -60,9 +64,11 @@ private:
     std::atomic<bool> done = false;
     int number_of_client{ 0 };
     int current_clients{0};
+    int ints_weight [9] = {20, 30, 40, 50, 60, 70, 80, 90, 100};
+
     std::mutex mutex_number;
 
-    std::mt19937 rng{ std::random_device{}() };
+
 
     std::array<bench,3> benches {
         bench(26,50),

@@ -18,8 +18,8 @@ void gym::stop(){
 void gym::makeQueue() {
 
     while (!done) {
-        static thread_local std::uniform_int_distribution<> wait(5, 10);
-        std::this_thread::sleep_for(std::chrono::milliseconds(wait(rng) * 100));
+//        static thread_local std::uniform_int_distribution<> wait(5, 10);
+//        std::this_thread::sleep_for(std::chrono::milliseconds(wait(rng) * 100));
 
 
         if (clients.size() != line.size()) {
@@ -43,8 +43,8 @@ void gym::makeQueue() {
 void gym::makeQueue2() {
 
     while (!done) {
-        static thread_local std::uniform_int_distribution<> wait(5, 10);
-        std::this_thread::sleep_for(std::chrono::milliseconds(wait(rng) * 100));
+//        static thread_local std::uniform_int_distribution<> wait(5, 10);
+//        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         int first_free{ 0 };
 
         while(true) {
@@ -70,17 +70,18 @@ void gym::makeQueue2() {
 void gym::makeQueue3() {
 
     while (!done) {
-        static thread_local std::uniform_int_distribution<> wait(5, 10);
-        std::this_thread::sleep_for(std::chrono::milliseconds(wait(rng) * 200));
-
+//        static thread_local std::uniform_int_distribution<> wait(5, 10);
+//        std::this_thread::sleep_for(std::chrono::milliseconds(wait(rng) * 200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         if (line.at(9).getMutex().try_lock()){
-            if(line.at(9).is_free()) {
-                clients.emplace_back(std::make_unique<client>(number_of_client, 9, *this, done));
-                number_of_client++;
-            }
-            line.at(9).getMutex().unlock();
+//            if(line.at(9).is_free()) {
+//                clients.emplace_back(std::make_unique<client>(number_of_client, 9, *this, done));
+//                number_of_client++;
+//            }
+//            line.at(9).getMutex().unlock();
         }
+//        line.at(9).getMutex().unlock();
 
     }
 }
@@ -97,6 +98,7 @@ void gym::run() {
     std::thread sss(&gym::makeQueue3,this);
 
     sss.join();
+
 }
 
 std::array<place_in_line, 10> &gym::getLine() {
@@ -125,6 +127,10 @@ std::mutex &gym::getMutexNumber(){
 
 std::array<deadlift_position, 3> &gym::getDeadliftes(){
     return deadliftes;
+}
+
+int *gym::getIntsWeight(){
+    return ints_weight;
 }
 
 

@@ -12,28 +12,34 @@ void receptionist::work(){
 }
 
 void receptionist::browsingFacebook() {
-    g.printer.print_receptionist(30, 15);
-    std::this_thread::sleep_for(std::chrono::milliseconds(2870));
-    g.printer.clear_receptionist(30, 15);
+    g.printer.print_receptionist(20, 10);
+    g.printer.print_status(203,12,"Receptionist: FB time           ");
+    static thread_local std::uniform_int_distribution<> wait(30, 50);
+    std::this_thread::sleep_for(std::chrono::milliseconds(wait(rng) * 100));
+    g.printer.clear_receptionist(20, 10);
 }
 
 void receptionist::waitingForClient() {
-    g.printer.print_receptionist(20, 10);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(2960));
+
+    g.printer.print_receptionist(30, 15);
 
     std::unique_lock<std::mutex> number_lock(g.getMutexNumber());
 
 
-    if(g.getCurrentClients() < 5) {
+    if(g.getCurrentClients() < 10) {
         g.rec.setFree(true);
         g.rec.release();
 
     }
     number_lock.unlock();
-    g.printer.clear_receptionist(20, 10);
 
 
+    g.printer.print_status(203,12,"Receptionist: waiting for Client");
+    static thread_local std::uniform_int_distribution<> wait(10, 30);
+    std::this_thread::sleep_for(std::chrono::milliseconds(wait(rng) * 100));
+
+    g.printer.clear_receptionist(30, 15);
 }
 
 std::thread &receptionist::getLifeline(){

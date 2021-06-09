@@ -9,6 +9,14 @@ class screen_printer {
 public:
     std::mutex &getMutex();
 
+    void print_status(int x,int y,char *text);
+
+    void print_status_value(int x,int y,char *text,int value);
+
+    void print_number_of_clients(int x);
+
+    void print_client_status(int id);
+
     void print_client(int x, int y, int id);
 
     void clear_client(int x, int y);
@@ -20,7 +28,6 @@ public:
     void print_trainer(int x, int y);
 
     void clear_trainer(int x, int y);
-
 
     void printLoad(int xPosition, int yPosition, int weight);
 

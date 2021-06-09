@@ -6,23 +6,21 @@ client::client(int id, int numberInLine, gym& g, std::atomic<bool> &done) : id(i
 
 void client::visit() {
 
-//    do {
-        // Wejście do kolejki
-        in_line();
-        // Wejście do recepcji
-
-        reception();
-        // Wejście do szatni
-        locker_room();
-        // trening
-        training();
-
-//    }while(!done);
+    // Wejście do kolejki
+//    in_line();
+//    // Wejście do recepcji
+//
+//    reception();
+//    // Wejście do szatni
+//    locker_room();
+//    // trening
+//    training();
 
 }
 
 
 void client::in_line() {
+    g.printer.print_client_status(id);
     // Dostowanie następnego miejsca w kolejce
     while(number_in_Line >= 1){
         // Pobranie mutexu z akutalnego miejsca w kolejce
@@ -89,9 +87,9 @@ void client::reception() {
 
     std::unique_lock<std::mutex> lockNumber(g.getMutexNumber());
     g.setCurrentClients(g.getCurrentClients() + 1);
-    std::unique_lock<std::mutex> print(g.printer.getMutex());
-    mvprintw(15,203,"Liczba klientow %d",g.getCurrentClients());
-    print.unlock();
+
+    g.printer.print_number_of_clients(g.getCurrentClients());
+
     lockNumber.unlock();
 
     g.rec.release();
@@ -121,7 +119,9 @@ void client::locker_room() {
                 loc.getMutex().unlock();
 
                 // Czas przebierania
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                g.printer.print_status(208,17+id*2,"dressing up   ");
+                static thread_local std::uniform_int_distribution<> wait(30, 60);
+                std::this_thread::sleep_for(std::chrono::milliseconds(wait(rng) * 100));
 
                 g.printer.clear_client(loc.getX() + 2, loc.getY() + 2);
 
@@ -149,8 +149,6 @@ void client::training(){
         number_of_action++;
     }
 
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     leave();
 
 }
@@ -163,13 +161,18 @@ void client::crossfit(){
         g.printer.print_client(137 + x * 25, 17 + 1, id);
         g.cross.setClients(g.cross.getClients()+1);
         lockNumber.unlock();
+        g.printer.print_status(208,17+id*2,"wait cross    ");
         g.cross.wait_for_training();
+        g.printer.print_status(208,17+id*2,"cross time    ");
+        std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+
         g.printer.clear_client(137 + x * 25, 17 + 1);
 
     }else{
         g.printer.print_client(123, 28, id);
         lockNumber.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        g.printer.clear_client(123, 28);
     }
 }
 
@@ -213,8 +216,6 @@ void client::take_bench(){
             if (bench.getMutex().try_lock()) {
                 g.printer.print_client(bench.getX(), bench.getY(), id);
                 chest_press(bench);
-
-
                 g.printer.clear_client(bench.getX(), bench.getY());
                 bench.getMutex().unlock();
                 end = true;
@@ -231,12 +232,16 @@ void client::take_bench(){
 }
 
 void client::deadlift(deadlift_position &d_l_Position){
-    int weight = 80;
+//    int weight = rand() % 9;
+
+    int weight =  g.getIntsWeight()[rand() % 9];
+
+    g.printer.print_status_value(208,17+id*2,"request w: %d",weight);
+
     auto disces_index = g.disces_deadlift.request(weight);
 
-//    for (int i = 0; i < disces_index.size(); ++i) {
-//        mvprintw(20+i,200+id*3,"%d",disces_index[i]);
-//    }
+
+
     int weight_left=0;
     int l = 0;
     int r = 0;
@@ -254,8 +259,10 @@ void client::deadlift(deadlift_position &d_l_Position){
             r +=2;
         }
     }
+    g.printer.print_status(208,17+id*2,"deadlift      ");
+    static thread_local std::uniform_int_distribution<> wait(50, 100);
+    std::this_thread::sleep_for(std::chrono::milliseconds(wait(rng) * 100));
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
 
     g.printer.clear_deadlift(d_l_Position.getX(), d_l_Position.getY() + 6);
 
@@ -271,8 +278,10 @@ void client::deadlift(deadlift_position &d_l_Position){
 }
 
 void client::chest_press(bench &ben){
+    int weight =  g.getIntsWeight()[rand() % 9];
 
-    int weight = 80;
+    g.printer.print_status_value(208,17+id*2,"request w: %d",weight);
+
     auto disces_index = g.disces_chest_press.request(weight);
 
 //    for (int i = 0; i < disces_index.size(); ++i) {
@@ -295,7 +304,7 @@ void client::chest_press(bench &ben){
             r +=2;
         }
     }
-
+    g.printer.print_status(208,17+id*2,"chest press   ");
     std::this_thread::sleep_for(std::chrono::milliseconds(10000));
 
     g.printer.clear_bench(ben.getX(),ben.getY()+6);
@@ -321,10 +330,10 @@ void client::leave(){
         locker &loc = g.getLockers().at(number_lock);
         if (loc.getMutex().try_lock()){
             g.printer.clear_client(60, 15);
-
-
             g.printer.print_client(loc.getX() + 2, loc.getY() + 2, this->id);
             g.printer.print_opened_locker(loc.getX(), loc.getY());
+
+            g.printer.print_status(208,17+id*2,"dressing up   ");
             std::this_thread::sleep_for(std::chrono::milliseconds(4000));
             loc.setIsFree(true);
             loc.setOwner(-1);
@@ -344,17 +353,17 @@ void client::leave(){
 
     g.setCurrentClients(g.getCurrentClients() - 1);
 
+    g.printer.print_number_of_clients(g.getCurrentClients());
+
     lockNumber.unlock();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    g.printer.print_status(208,17+id*2,"going out     ");
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 
     g.printer.clear_client(15, 26);
 
 }
-
-
-
-
 
 int client::get_id() {
     return id;

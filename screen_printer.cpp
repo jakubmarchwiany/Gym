@@ -1,7 +1,38 @@
 #include "screen_printer.h"
 #include "ncurses.h"
 
+void screen_printer::print_status(int x, int y, char *text) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    attron(COLOR_PAIR(72));
+    mvprintw(y,x,text);
+    attroff(COLOR_PAIR(72));
+    refresh();
+}
+void screen_printer::print_status_value(int x, int y, char *text, int value) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    attron(COLOR_PAIR(72));
+    mvprintw(y,x,text,value);
+    attroff(COLOR_PAIR(72));
+    refresh();
+}
 
+void screen_printer::print_number_of_clients(int x) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    attron(COLOR_PAIR(72));
+    mvprintw(10,203,"Clients at the gym: %d",x);
+    attroff(COLOR_PAIR(72));
+    refresh();
+}
+
+void screen_printer::print_client_status(int id) {
+    std::lock_guard<std::mutex> print_lock(print_mutex);
+    init_pair(72,COLOR_WHITE, COLOR_BLACK);
+    attron(COLOR_PAIR(72));
+    mvprintw(17+id*2,203,"C %d: ",id);
+    attroff(COLOR_PAIR(72));
+    refresh();
+
+}
 
 void screen_printer::print_client(int x, int y, int id) {
     std::lock_guard<std::mutex> print_lock(print_mutex);
@@ -304,6 +335,15 @@ void screen_printer::printGym() {
 std::mutex &screen_printer::getMutex(){
     return print_mutex;
 }
+
+
+
+
+
+
+
+
+
 
 
 

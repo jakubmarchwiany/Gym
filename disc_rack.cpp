@@ -14,15 +14,10 @@ std::vector<int> disc_rack::request(int weight)
 
         std::unique_lock<std::mutex> lock(mutex);
         if (std::vector<int> disces = try_get_disces(weight); !disces.empty()){
-
             lock.unlock();
-
-            // udało się wziąć ciężar
             return disces;
         }else if (attempt == 5){
             lock.unlock();
-            //nie udało się wziąc ciężarów
-            mvprintw(20,210,"%d ",attempt);
             return disces;
         }else{
             attempt++;

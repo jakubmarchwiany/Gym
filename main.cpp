@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include "gym.h"
 
+
 void prepareSimulation(){
     std::cout << "\e[8;65;238t";
     initscr();
